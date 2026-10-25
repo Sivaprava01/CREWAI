@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CREWAL • Autonomous Multi-Agent AI Platform</title>
+    <meta name="description" content="Production multi-agent AI system hosting 10 specialized CrewAI agents with real-time browser execution, Pydantic validation, and dynamic visualization.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Marked.js for High-Fidelity Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Custom Platform CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Ambient Mesh Gradient -->
+    <div class="bg-mesh"></div>
+
+    <!-- Sticky Navigation Bar -->
+    <header class="navbar">
+        <a href="/" class="brand">
+            <div class="brand-icon">
+                <i data-lucide="bot" style="width: 22px; height: 22px;"></i>
+            </div>
+            <div class="brand-info">
+                <h1>CREWAL</h1>
+                <span>Agentic AI Studio</span>
+            </div>
+        </a>
+
+        <div class="nav-actions">
+            <div class="badge-live">
+                <div class="pulse-dot"></div>
+                <span>10 Agents Operational</span>
+            </div>
+            <a href="/docs" target="_blank" rel="noopener" class="btn-nav">
+                <i data-lucide="code-2" style="width: 14px; height: 14px;"></i>
+                <span>Swagger API Docs</span>
+            </a>
+            <a href="/health" target="_blank" rel="noopener" class="btn-nav">
+                <i data-lucide="activity" style="width: 14px; height: 14px;"></i>
+                <span>Health</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Application Two-Column Layout -->
+    <div class="app-layout">
+        
+        <!-- Left Sidebar: 10 Agent Directory -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <span>Autonomous Crews</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--primary);">v1.0.0</span>
+                </div>
+            </div>
+            <ul class="sidebar-list" id="sidebar-agent-list">
+                <!-- Dynamically populated by app.js -->
+            </ul>
+        </aside>
+
+        <!-- Right Workspace: Agent Execution & Rich Output -->
+        <main class="main-workspace">
+            
+            <!-- Agent Header Banner Card -->
+            <div class="agent-header-card">
+                <div class="agent-header-top">
+                    <div class="agent-breadcrumbs">
+                        <span id="header-agent-pill" class="agent-pill pill-cyan">Agent 1</span>
+                        <span>/</span>
+                        <span id="header-agent-type" style="color: var(--text-secondary);">Sequential Crew</span>
+                    </div>
+                    <span id="header-agent-route" class="tag-item" style="font-family: var(--font-mono); color: #38BDF8;">
+                        POST /api/agent-1
+                    </span>
+                </div>
+
+                <h2 id="header-agent-title" class="agent-title">Blog Post Generator Crew</h2>
+                <p id="header-agent-desc" class="agent-desc">
+                    Autonomous 3-agent pipeline: Researches topics via web crawlers, writes comprehensive technical drafts, and edits for tone & verifiable sources.
+                </p>
+
+                <div class="agent-tags">
+                    <span class="tag-item"><i data-lucide="cpu" style="width: 12px; height: 12px;"></i> Multi-Agent Architecture</span>
+                    <span class="tag-item"><i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Pydantic v2 Schema</span>
+                    <span class="tag-item"><i data-lucide="zap" style="width: 12px; height: 12px;"></i> Real-Time Execution</span>
+                </div>
+            </div>
+
+            <!-- Workspace Grid: Inputs Left, Output Right -->
+            <div class="workspace-grid">
+                
+                <!-- Left Panel: Controls & Input Form -->
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="sliders" style="width: 16px; height: 16px; color: #38BDF8;"></i>
+                            <span>Parameters & Execution</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        
+                        <!-- Quick Scenario Presets -->
+                        <div class="preset-wrapper">
+                            <div class="preset-title">
+                                <i data-lucide="sparkles" style="width: 12px; height: 12px; color: #F59E0B;"></i>
+                                Quick Scenario Presets
+                            </div>
+                            <div class="preset-chips" id="preset-chips-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="agent-run-form">
+                            <div id="form-fields-container">
+                                <!-- Dynamic form inputs -->
+                            </div>
+
+                            <button type="submit" id="btn-run-agent" class="btn-run">
+                                <span class="spinner"></span>
+                                <i data-lucide="play" style="width: 16px; height: 16px;"></i>
+                                <span>Run Agent Crew</span>
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
+                <!-- Right Panel: Live Agent Output -->
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="terminal" style="width: 16px; height: 16px; color: #10B981;"></i>
+                            <span>Agent Project Output</span>
+                        </div>
+                        <div class="output-tools">
+                            <button type="button" class="btn-tool" id="btn-copy-output" title="Copy output">
+                                <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+                                <span>Copy</span>
+                            </button>
+                            <button type="button" class="btn-tool" id="btn-toggle-json" title="View raw JSON payload">
+                                <i data-lucide="code" style="width: 12px; height: 12px;"></i>
+                                <span>Raw JSON</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Output Status & Metrics Bar -->
+                    <div class="output-meta-bar">
+                        <div class="output-meta-left">
+                            <span id="execution-status-badge" class="badge-status status-success">Success 200 OK</span>
+                            <span id="output-meta-stat">185 words • ~1 min read</span>
+                        </div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">Format: Visual UI + API</span>
+                    </div>
+
+                    <!-- Rendered Rich Output View -->
+                    <div class="output-view-area" id="agent-output-view">
+                        <!-- Dynamic rich agent output rendered here -->
+                    </div>
+
+                    <!-- Collapsible Raw JSON Container -->
+                    <div class="raw-json-container" id="raw-json-container">
+                        <pre class="raw-json-pre" id="raw-json-output"></pre>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Platform Application Logic -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -6,9 +6,10 @@ Implements 10 specialized AI agents corresponding to the CrewAI project architec
 import os
 import re
 from typing import List, Optional, Dict, Any
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
@@ -34,6 +35,23 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Static files & template paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+def get_index_html() -> str:
+    """Load the full-fledged visual dashboard HTML template."""
+    index_file = os.path.join(TEMPLATES_DIR, "index.html")
+    if os.path.exists(index_file):
+        with open(index_file, "r", encoding="utf-8") as f:
+            return f.read()
+    return "<h1>CREWAL Agentic AI Engine UI Loading...</h1>"
+
 
 # Enable CORS
 app.add_middleware(
@@ -231,177 +249,9 @@ class Agent10Response(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    """Interactive root dashboard showing all 10 agents and API documentation."""
-    return """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CREWAL • Agentic AI Platform</title>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-        <style>
-            :root {
-                --bg: #0B0F19;
-                --surface: #111827;
-                --surface-card: #1E293B;
-                --accent: #38BDF8;
-                --accent-purple: #818CF8;
-                --text: #F8FAFC;
-                --text-muted: #94A3B8;
-                --border: #334155;
-            }
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body {
-                font-family: 'Plus Jakarta Sans', sans-serif;
-                background-color: var(--bg);
-                color: var(--text);
-                line-height: 1.6;
-                padding: 2.5rem 1.5rem;
-            }
-            .container { max-width: 1100px; margin: 0 auto; }
-            header {
-                text-align: center;
-                margin-bottom: 3rem;
-                padding-bottom: 2rem;
-                border-bottom: 1px solid var(--border);
-            }
-            .badge {
-                display: inline-block;
-                padding: 0.35rem 1rem;
-                border-radius: 999px;
-                background: rgba(56, 189, 248, 0.12);
-                color: var(--accent);
-                font-size: 0.85rem;
-                font-weight: 700;
-                margin-bottom: 1rem;
-                border: 1px solid rgba(56, 189, 248, 0.3);
-            }
-            h1 {
-                font-size: 2.8rem;
-                font-weight: 800;
-                letter-spacing: -0.03em;
-                background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                margin-bottom: 0.8rem;
-            }
-            p.lead { color: var(--text-muted); font-size: 1.15rem; max-width: 650px; margin: 0 auto; }
-            .links { margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; }
-            .btn {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.75rem 1.5rem;
-                border-radius: 10px;
-                font-weight: 700;
-                text-decoration: none;
-                transition: all 0.2s ease;
-            }
-            .btn-primary { background: var(--accent); color: #04101A; }
-            .btn-primary:hover { background: #7DD3FC; transform: translateY(-2px); }
-            .btn-secondary { background: var(--surface-card); color: var(--text); border: 1px solid var(--border); }
-            .btn-secondary:hover { background: #283548; transform: translateY(-2px); }
-            .grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-                gap: 1.25rem;
-                margin-top: 2rem;
-            }
-            .card {
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: 14px;
-                padding: 1.5rem;
-                transition: transform 0.2s, border-color 0.2s;
-            }
-            .card:hover { transform: translateY(-3px); border-color: var(--accent); }
-            .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
-            .agent-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); font-weight: 700; }
-            .method-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: #064E3B; color: #34D399; padding: 2px 8px; border-radius: 4px; }
-            .card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #FFF; }
-            .card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
-            .endpoint { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: var(--bg); padding: 0.5rem 0.75rem; border-radius: 6px; border: 1px solid var(--border); color: #CBD5E1; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <header>
-                <div class="badge">🚀 Production Ready • FastAPI Backend</div>
-                <h1>CREWAL Agentic AI Engine</h1>
-                <p class="lead">10 High-Performance Autonomous AI Agents operating across Sequential, Hierarchical, Router, and Human-in-the-Loop architectures.</p>
-                <div class="links">
-                    <a href="/docs" class="btn btn-primary">Open Interactive API Docs (Swagger)</a>
-                    <a href="/health" class="btn btn-secondary">Server Health Check</a>
-                </div>
-            </header>
+    """Full-fledged interactive UI dashboard showing all 10 agents and project outputs."""
+    return HTMLResponse(content=get_index_html())
 
-            <div class="grid">
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 1</span><span class="method-tag">POST</span></div>
-                    <h3>Blog Post Generator Crew</h3>
-                    <p>Researches topic, writes 600-word engaging article, and edits for tone & verifiable sources.</p>
-                    <div class="endpoint">/api/agent-1</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 2</span><span class="method-tag">POST</span></div>
-                    <h3>Competitor Intelligence Crew</h3>
-                    <p>Hierarchical crew analyzing competitors, pricing structures, news announcements, and SWOT tables.</p>
-                    <div class="endpoint">/api/agent-2</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 3</span><span class="method-tag">POST</span></div>
-                    <h3>Meeting Notes Summarizer Crew</h3>
-                    <p>Parallel processing of transcripts into 5-point summaries, action items with deadlines, and decisions.</p>
-                    <div class="endpoint">/api/agent-3</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 4</span><span class="method-tag">POST</span></div>
-                    <h3>Data Report & Audit Crew</h3>
-                    <p>Structured sales analysis with Pydantic statistics, top 3 business findings, and arithmetic audit.</p>
-                    <div class="endpoint">/api/agent-4</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 5</span><span class="method-tag">POST</span></div>
-                    <h3>Customer Support Router Flow</h3>
-                    <p>Event-driven flow routing tickets to Billing, Account Access, or Technical with priority response.</p>
-                    <div class="endpoint">/api/agent-5</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 6</span><span class="method-tag">POST</span></div>
-                    <h3>Resume Screening Flow</h3>
-                    <p>Evaluates applicant resumes against job requirements, scoring candidate match and routing to shortlist.</p>
-                    <div class="endpoint">/api/agent-6</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 7</span><span class="method-tag">POST</span></div>
-                    <h3>Bug & Issue Triage Flow</h3>
-                    <p>Classifies issues into bug, feature, or question; generates repro steps or user stories.</p>
-                    <div class="endpoint">/api/agent-7</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 8</span><span class="method-tag">POST</span></div>
-                    <h3>Content Repurposing Flow</h3>
-                    <p>Transforms one technical article into a LinkedIn post, a 6-tweet thread, and an email newsletter.</p>
-                    <div class="endpoint">/api/agent-8</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 9</span><span class="method-tag">POST</span></div>
-                    <h3>Lead Qualification Flow</h3>
-                    <p>B2B prospect scoring (hot/warm/cold), website enrichment, and personalized sales email generation.</p>
-                    <div class="endpoint">/api/agent-9</div>
-                </div>
-                <div class="card">
-                    <div class="card-header"><span class="agent-tag">Agent 10</span><span class="method-tag">POST</span></div>
-                    <h3>Approval & Executive Report Flow</h3>
-                    <p>Drafts evidence-based executive briefs with iterative revision and human-in-the-loop review.</p>
-                    <div class="endpoint">/api/agent-10</div>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
 
 @app.get("/health")
 def health_check():
@@ -489,11 +339,19 @@ The trajectory of {req.topic} is poised for accelerated growth. As best practice
         sources=sources
     )
 
-@app.get("/api/agent-1", response_model=Agent1Response, include_in_schema=False)
-@app.get("/agent1", response_model=Agent1Response, tags=["Agent 1"])
-def get_agent_1(topic: str = "Edge AI in Modern Healthcare"):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-1", response_model=Agent1Response, tags=["Agent 1"])
+def get_agent_1_api(topic: str = "Edge AI in Modern Healthcare"):
+    """JSON API GET endpoint for Agent 1."""
     return run_agent_1(Agent1Request(topic=topic))
+
+@app.get("/agent1", response_class=HTMLResponse, tags=["Agent 1 (UI)"])
+def get_agent_1_ui(request: Request, topic: str = "Edge AI in Modern Healthcare", format: Optional[str] = None):
+    """Full-fledged website view for Agent 1. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_1(Agent1Request(topic=topic))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 
 
 # ==========================================
@@ -540,12 +398,21 @@ def run_agent_2(req: Agent2Request):
 
 
 
-@app.get("/api/agent-2", response_model=Agent2Response, include_in_schema=False)
-@app.get("/agent2", response_model=Agent2Response, tags=["Agent 2"])
-def get_agent_2(competitors: Optional[str] = "https://linear.app,https://asana.com,https://jira.com"):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-2", response_model=Agent2Response, tags=["Agent 2"])
+def get_agent_2_api(competitors: Optional[str] = "https://linear.app,https://asana.com,https://jira.com"):
+    """JSON API GET endpoint for Agent 2."""
     comp_list = [c.strip() for c in competitors.split(",") if c.strip()]
     return run_agent_2(Agent2Request(competitors=comp_list))
+
+@app.get("/agent2", response_class=HTMLResponse, tags=["Agent 2 (UI)"])
+def get_agent_2_ui(request: Request, competitors: Optional[str] = "https://linear.app,https://asana.com,https://jira.com", format: Optional[str] = None):
+    """Full-fledged website view for Agent 2. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        comp_list = [c.strip() for c in competitors.split(",") if c.strip()]
+        res = run_agent_2(Agent2Request(competitors=comp_list))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 3: Meeting Notes Summarizer Crew
 # ==========================================
@@ -604,12 +471,21 @@ def run_agent_3(req: Agent3Request):
 
 
 
-@app.get("/api/agent-3", response_model=Agent3Response, include_in_schema=False)
-@app.get("/agent3", response_model=Agent3Response, tags=["Agent 3"])
-def get_agent_3():
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-3", response_model=Agent3Response, tags=["Agent 3"])
+def get_agent_3_api():
+    """JSON API GET endpoint for Agent 3."""
     default_transcript = "Elena: We need to complete database cutover by Nov 14.\nMarcus: I will finish the migration scripts by Nov 8.\nSiddharth: I will configure the read-replicas by Nov 10.\nElena: We agreed to use pg_upgrade with hardlinks."
     return run_agent_3(Agent3Request(transcript=default_transcript))
+
+@app.get("/agent3", response_class=HTMLResponse, tags=["Agent 3 (UI)"])
+def get_agent_3_ui(request: Request, format: Optional[str] = None):
+    """Full-fledged website view for Agent 3. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        default_transcript = "Elena: We need to complete database cutover by Nov 14.\nMarcus: I will finish the migration scripts by Nov 8.\nSiddharth: I will configure the read-replicas by Nov 10.\nElena: We agreed to use pg_upgrade with hardlinks."
+        res = run_agent_3(Agent3Request(transcript=default_transcript))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 4: Data Report & Audit Crew
 # ==========================================
@@ -671,11 +547,19 @@ def run_agent_4(req: Agent4Request):
 
 
 
-@app.get("/api/agent-4", response_model=Agent4Response, include_in_schema=False)
-@app.get("/agent4", response_model=Agent4Response, tags=["Agent 4"])
-def get_agent_4():
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-4", response_model=Agent4Response, tags=["Agent 4"])
+def get_agent_4_api():
+    """JSON API GET endpoint for Agent 4."""
     return run_agent_4(Agent4Request())
+
+@app.get("/agent4", response_class=HTMLResponse, tags=["Agent 4 (UI)"])
+def get_agent_4_ui(request: Request, format: Optional[str] = None):
+    """Full-fledged website view for Agent 4. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_4(Agent4Request())
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 5: Customer Support Router Flow
 # ==========================================
@@ -707,11 +591,19 @@ def run_agent_5(req: Agent5Request):
 
 
 
-@app.get("/api/agent-5", response_model=Agent5Response, include_in_schema=False)
-@app.get("/agent5", response_model=Agent5Response, tags=["Agent 5"])
-def get_agent_5(ticket: str = "I was billed twice on invoice #9201 for my monthly subscription."):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-5", response_model=Agent5Response, tags=["Agent 5"])
+def get_agent_5_api(ticket: str = "I was billed twice on invoice #9201 for my monthly subscription."):
+    """JSON API GET endpoint for Agent 5."""
     return run_agent_5(Agent5Request(ticket=ticket))
+
+@app.get("/agent5", response_class=HTMLResponse, tags=["Agent 5 (UI)"])
+def get_agent_5_ui(request: Request, ticket: str = "I was billed twice on invoice #9201 for my monthly subscription.", format: Optional[str] = None):
+    """Full-fledged website view for Agent 5. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_5(Agent5Request(ticket=ticket))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 6: Resume Screening Flow
 # ==========================================
@@ -755,10 +647,9 @@ def run_agent_6(req: Agent6Request):
 
 
 
-@app.get("/api/agent-6", response_model=Agent6Response, include_in_schema=False)
-@app.get("/agent6", response_model=Agent6Response, tags=["Agent 6"])
-def get_agent_6():
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-6", response_model=Agent6Response, tags=["Agent 6"])
+def get_agent_6_api():
+    """JSON API GET endpoint for Agent 6."""
     return run_agent_6(Agent6Request(
         job_description="Junior Backend Developer with Python, SQL, REST APIs, and Docker.",
         resumes=[
@@ -766,6 +657,15 @@ def get_agent_6():
             ResumeItem(name="Bob Taylor", text="Graphic designer specialized in Photoshop and branding.")
         ]
     ))
+
+@app.get("/agent6", response_class=HTMLResponse, tags=["Agent 6 (UI)"])
+def get_agent_6_ui(request: Request, format: Optional[str] = None):
+    """Full-fledged website view for Agent 6. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = get_agent_6_api()
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 7: Bug & Issue Triage Flow
 # ==========================================
@@ -815,11 +715,19 @@ def run_agent_7(req: Agent7Request):
 
 
 
-@app.get("/api/agent-7", response_model=Agent7Response, include_in_schema=False)
-@app.get("/agent7", response_model=Agent7Response, tags=["Agent 7"])
-def get_agent_7(title: str = "Session token expires during multi-step checkout without saving draft", body: str = "When filling out shipping details for >15 minutes, page redirects and form data is cleared."):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-7", response_model=Agent7Response, tags=["Agent 7"])
+def get_agent_7_api(title: str = "Session token expires during multi-step checkout without saving draft", body: str = "When filling out shipping details for >15 minutes, page redirects and form data is cleared."):
+    """JSON API GET endpoint for Agent 7."""
     return run_agent_7(Agent7Request(title=title, body=body))
+
+@app.get("/agent7", response_class=HTMLResponse, tags=["Agent 7 (UI)"])
+def get_agent_7_ui(request: Request, title: str = "Session token expires during multi-step checkout without saving draft", body: str = "When filling out shipping details for >15 minutes, page redirects and form data is cleared.", format: Optional[str] = None):
+    """Full-fledged website view for Agent 7. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_7(Agent7Request(title=title, body=body))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 8: Content Repurposing Flow
 # ==========================================
@@ -881,11 +789,19 @@ Pragmatic engineering beats premature complexity every single time. What archite
 
 
 
-@app.get("/api/agent-8", response_model=Agent8Response, include_in_schema=False)
-@app.get("/agent8", response_model=Agent8Response, tags=["Agent 8"])
-def get_agent_8(article: str = "Many teams adopt microservices too early, introducing network latency and operational complexity. Modern software engineering teams are returning to modular monoliths for faster iteration."):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-8", response_model=Agent8Response, tags=["Agent 8"])
+def get_agent_8_api(article: str = "Many teams adopt microservices too early, introducing network latency and operational complexity. Modern software engineering teams are returning to modular monoliths for faster iteration."):
+    """JSON API GET endpoint for Agent 8."""
     return run_agent_8(Agent8Request(article=article))
+
+@app.get("/agent8", response_class=HTMLResponse, tags=["Agent 8 (UI)"])
+def get_agent_8_ui(request: Request, article: str = "Many teams adopt microservices too early, introducing network latency and operational complexity. Modern software engineering teams are returning to modular monoliths for faster iteration.", format: Optional[str] = None):
+    """Full-fledged website view for Agent 8. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_8(Agent8Request(article=article))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 9: Lead Qualification Flow
 # ==========================================
@@ -941,11 +857,19 @@ Enterprise Solutions Team"""
 
 
 
-@app.get("/api/agent-9", response_model=Agent9Response, include_in_schema=False)
-@app.get("/agent9", response_model=Agent9Response, tags=["Agent 9"])
-def get_agent_9(company_name: str = "Apex Cloud Systems", website: str = "https://apexcloud.example.com", employees: int = 85, revenue: str = "$12M ARR"):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-9", response_model=Agent9Response, tags=["Agent 9"])
+def get_agent_9_api(company_name: str = "Apex Cloud Systems", website: str = "https://apexcloud.example.com", employees: int = 85, revenue: str = "$12M ARR"):
+    """JSON API GET endpoint for Agent 9."""
     return run_agent_9(Agent9Request(company_name=company_name, website=website, employees=employees, annual_revenue=revenue))
+
+@app.get("/agent9", response_class=HTMLResponse, tags=["Agent 9 (UI)"])
+def get_agent_9_ui(request: Request, company_name: str = "Apex Cloud Systems", website: str = "https://apexcloud.example.com", employees: int = 85, revenue: str = "$12M ARR", format: Optional[str] = None):
+    """Full-fledged website view for Agent 9. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_9(Agent9Request(company_name=company_name, website=website, employees=employees, annual_revenue=revenue))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # AGENT 10: Approval & Executive Report Flow
 # ==========================================
@@ -987,11 +911,19 @@ This report provides an objective, evidence-based assessment of **{req.topic}**,
 
 
 
-@app.get("/api/agent-10", response_model=Agent10Response, include_in_schema=False)
-@app.get("/agent10", response_model=Agent10Response, tags=["Agent 10"])
-def get_agent_10(topic: str = "Adoption of Rust in High-Performance Systems", audience: str = "Engineering Leadership & Directors", feedback: Optional[str] = None):
-    """GET endpoint for direct browser URL testing."""
+@app.get("/api/agent-10", response_model=Agent10Response, tags=["Agent 10"])
+def get_agent_10_api(topic: str = "Adoption of Rust in High-Performance Systems", audience: str = "Engineering Leadership & Directors", feedback: Optional[str] = None):
+    """JSON API GET endpoint for Agent 10."""
     return run_agent_10(Agent10Request(topic=topic, audience=audience, feedback=feedback))
+
+@app.get("/agent10", response_class=HTMLResponse, tags=["Agent 10 (UI)"])
+def get_agent_10_ui(request: Request, topic: str = "Adoption of Rust in High-Performance Systems", audience: str = "Engineering Leadership & Directors", feedback: Optional[str] = None, format: Optional[str] = None):
+    """Full-fledged website view for Agent 10. Returns JSON if format=json or Accept: application/json."""
+    accept = request.headers.get("accept", "")
+    if format == "json" or ("application/json" in accept and "text/html" not in accept):
+        res = run_agent_10(Agent10Request(topic=topic, audience=audience, feedback=feedback))
+        return JSONResponse(content=res.model_dump())
+    return HTMLResponse(content=get_index_html())
 # ==========================================
 # LOCAL SERVER ENTRYPOINT
 # ==========================================
