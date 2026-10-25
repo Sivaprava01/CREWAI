@@ -69,7 +69,7 @@ def call_llm(prompt: str, fallback_generator=None) -> str:
 
 # Agent 1
 class Agent1Request(BaseModel):
-    topic: str = Field(..., min_length=3, description="Topic for research and blog post drafting", example="Edge AI in Modern Healthcare")
+    topic: str = Field(..., min_length=3, description="Topic for research and blog post drafting", examples=["Edge AI in Modern Healthcare"])
 
 class Agent1Response(BaseModel):
     agent: str = "Agent 1"
@@ -82,7 +82,7 @@ class Agent1Response(BaseModel):
 
 # Agent 2
 class Agent2Request(BaseModel):
-    competitors: List[str] = Field(..., min_items=1, max_items=5, description="List of competitor URLs or company names", example=["https://linear.app", "https://asana.com", "https://jira.com"])
+    competitors: List[str] = Field(..., min_length=1, max_length=5, description="List of competitor URLs or company names", examples=[["https://linear.app", "https://asana.com", "https://jira.com"]])
 
 class Agent2Response(BaseModel):
     agent: str = "Agent 2"
@@ -95,7 +95,7 @@ class Agent2Response(BaseModel):
 
 # Agent 3
 class Agent3Request(BaseModel):
-    transcript: str = Field(..., min_length=20, description="Meeting conversation transcript", example="Elena: We need to complete database cutover by Nov 14.\nMarcus: I will finish the migration scripts by Nov 8.\nSiddharth: I will configure the read-replicas by Nov 10.\nElena: Agreed to use pg_upgrade.")
+    transcript: str = Field(..., min_length=20, description="Meeting conversation transcript", examples=["Elena: We need to complete database cutover by Nov 14.\nMarcus: I will finish the migration scripts by Nov 8.\nSiddharth: I will configure the read-replicas by Nov 10.\nElena: Agreed to use pg_upgrade."])
 
 class Agent3Response(BaseModel):
     agent: str = "Agent 3"
@@ -132,7 +132,7 @@ class Agent4Response(BaseModel):
 
 # Agent 5
 class Agent5Request(BaseModel):
-    ticket: str = Field(..., min_length=5, description="Customer support message", example="I was billed twice on invoice #9201 for my monthly subscription.")
+    ticket: str = Field(..., min_length=5, description="Customer support message", examples=["I was billed twice on invoice #9201 for my monthly subscription."])
 
 class Agent5Response(BaseModel):
     agent: str = "Agent 5"
@@ -149,8 +149,8 @@ class ResumeItem(BaseModel):
     text: str
 
 class Agent6Request(BaseModel):
-    job_description: str = Field(..., min_length=15, description="Target job requirements", example="Junior Backend Developer with Python, SQL, and Docker experience.")
-    resumes: List[ResumeItem] = Field(..., min_items=1, description="List of applicant resumes to screen")
+    job_description: str = Field(..., min_length=15, description="Target job requirements", examples=["Junior Backend Developer with Python, SQL, and Docker experience."])
+    resumes: List[ResumeItem] = Field(..., min_length=1, description="List of applicant resumes to screen")
 
 class CandidateEvaluation(BaseModel):
     name: str
@@ -167,8 +167,8 @@ class Agent6Response(BaseModel):
 
 # Agent 7
 class Agent7Request(BaseModel):
-    title: str = Field(..., min_length=5, description="Issue headline", example="Session token expires during multi-step checkout without saving draft")
-    body: str = Field(..., min_length=10, description="Issue description and context", example="When filling out shipping and billing details for >15 minutes, page redirects and form data is cleared.")
+    title: str = Field(..., min_length=5, description="Issue headline", examples=["Session token expires during multi-step checkout without saving draft"])
+    body: str = Field(..., min_length=10, description="Issue description and context", examples=["When filling out shipping and billing details for >15 minutes, page redirects and form data is cleared."])
 
 class Agent7Response(BaseModel):
     agent: str = "Agent 7"
@@ -180,7 +180,7 @@ class Agent7Response(BaseModel):
 
 # Agent 8
 class Agent8Request(BaseModel):
-    article: str = Field(..., min_length=30, description="Source article to repurpose", example="Many teams adopt microservices too early, introducing network latency and operational complexity. Modern software engineering teams are returning to modular monoliths for faster iteration.")
+    article: str = Field(..., min_length=30, description="Source article to repurpose", examples=["Many teams adopt microservices too early, introducing network latency and operational complexity. Modern software engineering teams are returning to modular monoliths for faster iteration."])
 
 class Agent8Response(BaseModel):
     agent: str = "Agent 8"
@@ -193,8 +193,8 @@ class Agent8Response(BaseModel):
 
 # Agent 9
 class Agent9Request(BaseModel):
-    company_name: str = Field(..., min_length=2, description="Target company or prospect name", example="Apex Cloud Systems")
-    website: str = Field(..., min_length=5, description="Company website URL", example="https://apexcloud.example.com")
+    company_name: str = Field(..., min_length=2, description="Target company or prospect name", examples=["Apex Cloud Systems"])
+    website: str = Field(..., min_length=5, description="Company website URL", examples=["https://apexcloud.example.com"])
     employees: Optional[int] = Field(default=85, description="Estimated team size")
     annual_revenue: Optional[str] = Field(default="$12M ARR", description="Estimated revenue")
 
@@ -211,8 +211,8 @@ class Agent9Response(BaseModel):
 
 # Agent 10
 class Agent10Request(BaseModel):
-    topic: str = Field(..., min_length=3, description="Subject of the report", example="Adoption of Rust in High-Performance Systems")
-    audience: str = Field(..., min_length=2, description="Target readership", example="Engineering Leadership & Directors")
+    topic: str = Field(..., min_length=3, description="Subject of the report", examples=["Adoption of Rust in High-Performance Systems"])
+    audience: str = Field(..., min_length=2, description="Target readership", examples=["Engineering Leadership & Directors"])
     feedback: Optional[str] = Field(default=None, description="Optional revision feedback from human reviewer")
 
 class Agent10Response(BaseModel):
