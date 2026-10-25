@@ -29,7 +29,9 @@ Most AI implementations rely on single-prompt completions that struggle with mul
 * **10 Dedicated Specialized Endpoints:** Every agent operates as an isolated API route (`/api/agent-1` to `/api/agent-10` with short aliases `/agent1` to `/agent10`).
 * **Strict Schema Enforcement:** Every request and response is validated via **Pydantic v2**, preventing hallucinations and guaranteeing uniform JSON contracts.
 * **Resilient Dual-Mode Execution:** Leverages Google Gemini (`google-genai`) for real-time generative reasoning, backed by deterministic fallback handlers that guarantee 100% API availability even under network or quota constraints.
-* **Interactive Dashboard & Docs:** Automatically serves an HTML operations hub at `/` and OpenAPI Swagger documentation at `/docs`.
+* **Full-Fledged Interactive Web Application:** Visiting `http://localhost:8000/` or any `/agent1` to `/agent10` in a web browser serves a modern visual dashboard rendering formatted agent outputs, interactive parameters, preset test scenarios, and SWOT/KPI metrics.
+* **Dual-Mode Content Negotiation:** Returns rich interactive HTML for web browsers and clean structured JSON for automated API clients or when requested via `format=json`.
+* **Interactive Dashboard & Docs:** Serves the visual web application at `/` and `/agent1`-`/agent10`, plus OpenAPI Swagger docs at `/docs`.
 
 ---
 
@@ -427,14 +429,18 @@ curl -X POST "http://localhost:8000/api/agent-1" \
 
 ```
 CREWAI_PROJECTS/
-├── app.py                      # FastAPI server with all 10 specialized agent endpoints
+├── app.py                      # FastAPI server with all 10 agents & dual-mode UI/API routes
 ├── requirements.txt            # Python dependencies (FastAPI, Uvicorn, Pydantic, GenAI)
 ├── README.md                   # Complete architectural and API documentation
+├── static/                     # Web application static assets
+│   ├── css/style.css           # Modern dark-glass design system
+│   └── js/app.js               # Frontend controller, Markdown renderer & API client
+├── templates/                  # Frontend HTML templates
+│   └── index.html              # Full-fledged single page application for all 10 agents
 ├── render.yaml                 # Infrastructure-as-code blueprint for Render
 ├── Procfile                    # Web process launch definition for Render / Heroku
 ├── vercel.json                 # Serverless deployment configuration for Vercel
-├── .gitignore                  # Git ignore rules for virtual environments & secrets
-└── crewai_projects (1).html    # Reference project specification
+└── .gitignore                  # Git ignore rules for virtual environments & secrets
 ```
 
 ---
