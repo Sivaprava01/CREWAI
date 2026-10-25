@@ -475,24 +475,14 @@ curl -X POST "http://localhost:8000/api/agent-1" \
 
 ```
 CREWAI_PROJECTS/
-├── app.py                                  # FastAPI server with 10 specialized agent endpoints
-├── requirements.txt                        # Python dependencies (FastAPI, Uvicorn, Pydantic, GenAI)
-├── README.md                               # Complete architectural and API documentation
-├── render.yaml                             # Infrastructure-as-code blueprint for Render deployment
-├── Procfile                                # Web process launch definition for Render / Heroku
-├── vercel.json                             # Serverless deployment configuration for Vercel
-├── .gitignore                              # Git ignore rules for virtual environments & secrets
-├── crewai_projects (1).html                # Original project instructions
-├── Project_01_Blog_Post_Crew.ipynb         # Agent 1 Notebook
-├── Project_2_Competitor_Analysis_Crew.ipynb # Agent 2 Notebook
-├── Project_3_Meeting_Notes_Crew.ipynb      # Agent 3 Notebook
-├── Project_4_Data_Report_Crew.ipynb        # Agent 4 Notebook
-├── Project_5_Customer_Support_Flow.ipynb   # Agent 5 Notebook
-├── Project_6_Resume_Screening_Flow.ipynb   # Agent 6 Notebook
-├── Project_7_Bug_Triage_Flow.ipynb         # Agent 7 Notebook
-├── Project_8_Content_Repurposing_Flow.ipynb# Agent 8 Notebook
-├── Project_9_Lead_Qualification_Flow.ipynb # Agent 9 Notebook
-└── Project_10_Approval_Report_Flow.ipynb   # Agent 10 Notebook
+├── app.py                      # FastAPI server with all 10 specialized agent endpoints
+├── requirements.txt            # Python dependencies (FastAPI, Uvicorn, Pydantic, GenAI)
+├── README.md                   # Complete architectural and API documentation
+├── render.yaml                 # Infrastructure-as-code blueprint for Render deployment
+├── Procfile                    # Web process launch definition for Render / Heroku
+├── vercel.json                 # Serverless deployment configuration for Vercel
+├── .gitignore                  # Git ignore rules for virtual environments & secrets
+└── crewai_projects (1).html    # Reference project specification
 ```
 
 ---
