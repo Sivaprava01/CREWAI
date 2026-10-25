@@ -489,6 +489,12 @@ The trajectory of {req.topic} is poised for accelerated growth. As best practice
         sources=sources
     )
 
+@app.get("/api/agent-1", response_model=Agent1Response, include_in_schema=False)
+@app.get("/agent1", response_model=Agent1Response, tags=["Agent 1"])
+def get_agent_1(topic: str = "Edge AI in Modern Healthcare"):
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_1(Agent1Request(topic=topic))
+
 
 # ==========================================
 # AGENT 2: Competitor Intelligence Crew
@@ -533,6 +539,13 @@ def run_agent_2(req: Agent2Request):
     )
 
 
+
+@app.get("/api/agent-2", response_model=Agent2Response, include_in_schema=False)
+@app.get("/agent2", response_model=Agent2Response, tags=["Agent 2"])
+def get_agent_2(competitors: Optional[str] = "https://linear.app,https://asana.com,https://jira.com"):
+    """GET endpoint for direct browser URL testing."""
+    comp_list = [c.strip() for c in competitors.split(",") if c.strip()]
+    return run_agent_2(Agent2Request(competitors=comp_list))
 # ==========================================
 # AGENT 3: Meeting Notes Summarizer Crew
 # ==========================================
@@ -590,6 +603,13 @@ def run_agent_3(req: Agent3Request):
     )
 
 
+
+@app.get("/api/agent-3", response_model=Agent3Response, include_in_schema=False)
+@app.get("/agent3", response_model=Agent3Response, tags=["Agent 3"])
+def get_agent_3():
+    """GET endpoint for direct browser URL testing."""
+    default_transcript = "Elena: We need to complete database cutover by Nov 14.\nMarcus: I will finish the migration scripts by Nov 8.\nSiddharth: I will configure the read-replicas by Nov 10.\nElena: We agreed to use pg_upgrade with hardlinks."
+    return run_agent_3(Agent3Request(transcript=default_transcript))
 # ==========================================
 # AGENT 4: Data Report & Audit Crew
 # ==========================================
@@ -650,6 +670,12 @@ def run_agent_4(req: Agent4Request):
     )
 
 
+
+@app.get("/api/agent-4", response_model=Agent4Response, include_in_schema=False)
+@app.get("/agent4", response_model=Agent4Response, tags=["Agent 4"])
+def get_agent_4():
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_4(Agent4Request())
 # ==========================================
 # AGENT 5: Customer Support Router Flow
 # ==========================================
@@ -680,6 +706,12 @@ def run_agent_5(req: Agent5Request):
     )
 
 
+
+@app.get("/api/agent-5", response_model=Agent5Response, include_in_schema=False)
+@app.get("/agent5", response_model=Agent5Response, tags=["Agent 5"])
+def get_agent_5(ticket: str = "I was billed twice on invoice #9201 for my monthly subscription."):
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_5(Agent5Request(ticket=ticket))
 # ==========================================
 # AGENT 6: Resume Screening Flow
 # ==========================================
@@ -722,6 +754,18 @@ def run_agent_6(req: Agent6Request):
     )
 
 
+
+@app.get("/api/agent-6", response_model=Agent6Response, include_in_schema=False)
+@app.get("/agent6", response_model=Agent6Response, tags=["Agent 6"])
+def get_agent_6():
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_6(Agent6Request(
+        job_description="Junior Backend Developer with Python, SQL, REST APIs, and Docker.",
+        resumes=[
+            ResumeItem(name="Alice Wang", text="Python backend engineer with 3 years building APIs using FastAPI, Docker, and PostgreSQL."),
+            ResumeItem(name="Bob Taylor", text="Graphic designer specialized in Photoshop and branding.")
+        ]
+    ))
 # ==========================================
 # AGENT 7: Bug & Issue Triage Flow
 # ==========================================
@@ -770,6 +814,12 @@ def run_agent_7(req: Agent7Request):
     )
 
 
+
+@app.get("/api/agent-7", response_model=Agent7Response, include_in_schema=False)
+@app.get("/agent7", response_model=Agent7Response, tags=["Agent 7"])
+def get_agent_7(title: str = "Session token expires during multi-step checkout without saving draft", body: str = "When filling out shipping details for >15 minutes, page redirects and form data is cleared."):
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_7(Agent7Request(title=title, body=body))
 # ==========================================
 # AGENT 8: Content Repurposing Flow
 # ==========================================
@@ -830,6 +880,12 @@ Pragmatic engineering beats premature complexity every single time. What archite
     )
 
 
+
+@app.get("/api/agent-8", response_model=Agent8Response, include_in_schema=False)
+@app.get("/agent8", response_model=Agent8Response, tags=["Agent 8"])
+def get_agent_8(article: str = "Many teams adopt microservices too early, introducing network latency and operational complexity. Modern software engineering teams are returning to modular monoliths for faster iteration."):
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_8(Agent8Request(article=article))
 # ==========================================
 # AGENT 9: Lead Qualification Flow
 # ==========================================
@@ -884,6 +940,12 @@ Enterprise Solutions Team"""
     )
 
 
+
+@app.get("/api/agent-9", response_model=Agent9Response, include_in_schema=False)
+@app.get("/agent9", response_model=Agent9Response, tags=["Agent 9"])
+def get_agent_9(company_name: str = "Apex Cloud Systems", website: str = "https://apexcloud.example.com", employees: int = 85, revenue: str = "$12M ARR"):
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_9(Agent9Request(company_name=company_name, website=website, employees=employees, annual_revenue=revenue))
 # ==========================================
 # AGENT 10: Approval & Executive Report Flow
 # ==========================================
@@ -924,6 +986,12 @@ This report provides an objective, evidence-based assessment of **{req.topic}**,
     )
 
 
+
+@app.get("/api/agent-10", response_model=Agent10Response, include_in_schema=False)
+@app.get("/agent10", response_model=Agent10Response, tags=["Agent 10"])
+def get_agent_10(topic: str = "Adoption of Rust in High-Performance Systems", audience: str = "Engineering Leadership & Directors", feedback: Optional[str] = None):
+    """GET endpoint for direct browser URL testing."""
+    return run_agent_10(Agent10Request(topic=topic, audience=audience, feedback=feedback))
 # ==========================================
 # LOCAL SERVER ENTRYPOINT
 # ==========================================
